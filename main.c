@@ -33,6 +33,7 @@ void print_use_list(t_data *head) // for testing
         }
     }
 }
+
 void handlle_sigint(int sig)
 {
     (void)sig;
@@ -46,6 +47,7 @@ void handlle_signals()
     signal(SIGINT, handlle_sigint);
     // signal(SIGINT, handlle_sigint);
 }
+
 int exit_code;
 
 int main(int arc, char **arv, char **envp)
@@ -66,7 +68,7 @@ int main(int arc, char **arv, char **envp)
     hold_vars = malloc(sizeof(t_hold));
     quots.x = 0;
     data = NULL;
-    handlle_signals();
+   handlle_signals();
     while (1)
     {
         saved_stdout = dup(STDOUT_FILENO);
@@ -82,17 +84,16 @@ int main(int arc, char **arv, char **envp)
                     free(temp);
                     exit(exit_code);
                 }
-                //print_use_list(data);
-                // hold_vars->input = input;
-                // hold_vars->temp = temp;
-                // quots.saved_stdin = saved_stdin;
-                // exec_commandes(&env_var, &data, &hold_vars, &quots);
-                // dup2(saved_stdout, STDOUT_FILENO);
-                // dup2(saved_stdin, STDIN_FILENO);
-                // close(saved_stdout);
-                // close(saved_stdin);
+                // print_use_list(data);
+                hold_vars->input = input;
+                hold_vars->temp = temp;
+                quots.saved_stdin = saved_stdin;
+                exec_commandes(&env_var, &data, &hold_vars, &quots);
+                dup2(saved_stdout, STDOUT_FILENO);
+                dup2(saved_stdin, STDIN_FILENO);
+                close(saved_stdout);
+                close(saved_stdin);
             }
-            print_use_list(data);
         }
         ft_free_list(data);
         data = NULL;

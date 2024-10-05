@@ -17,17 +17,15 @@
 
 typedef struct redir_node
 {
-    char *redirection;
-    struct redir_node *next;
-
+    char                *redirection;
+    struct redir_node   *next;
 } t_redir_node;
 
 typedef struct data
 {
-    char    **argumment;
-    t_redir_node *redirections;
-    //char    **redirection;
-    struct data *next;
+    char            **argumment;
+    t_redir_node    *redirections;
+    struct data     *next;
 
 } t_data;
 
@@ -51,6 +49,7 @@ typedef struct quot
     int x;
     int empty;
     int herdoc_expan;
+    int id;
     int saved_stdin;
 } t_quots;
 
@@ -75,13 +74,30 @@ typedef struct parser
     int j;
     int redir_index;
     int flag_backslash;
+    int check_last_space;
+    int check_first_space;
 } t_ParserState;
+
+typedef struct ParserContext
+{
+    t_ParserState *state;
+    t_arg_node **arg_list;
+    t_redir_node **redir_list;
+
+} t_ParserContext;
 
 extern int exit_code;
 
+int count_results(char **result);
+t_ParserContext initialize_parser_context(t_ParserState *state, t_arg_node **arg_list, t_redir_node **redir_list);
+void handle_null_env_or_redir(t_ParserContext *context, char *env, int check, int i);
+void free_env_result(char **env, char **result, int i, int check);
+void free_split_string(char **words);
+char *handle_env_variable(t_ParserState *state);
+int handle_split_env_result(t_ParserState *state, t_arg_node **arg_list, char **result, int *check);
 void append_redir_node(t_redir_node **redir_list, t_redir_node *new_node);
 int check_herdoc_error(char *input);
-char    **split_string(const char* input);
+char **split_string(const char *input, t_ParserState *state);
 void free_arg_list(t_arg_node *head);
 t_arg_node *create_arg_node(char *arg);
 void append_arg_node(t_arg_node **head, t_arg_node *new_node);
@@ -100,7 +116,7 @@ void finalize_args(t_ParserState *state, t_arg_node **arg_list, t_redir_node **r
 //void finalize_args(t_ParserState *state, t_arg_node **arg_list);
 void add_buffer_to_args(t_ParserState *state, t_arg_node **arg_list,  t_redir_node **redir_list);
 //void add_buffer_to_args(t_ParserState *state, t_arg_node **arg_list);
-void handle_empty_argument(t_ParserState *state, t_arg_node *arg_list);
+void handle_empty_argument(t_ParserState *state, t_arg_node *arg_list, t_redir_node **redir_list);
 void init_parser_state(t_ParserState *state, char *input, t_env *env_var, t_quots *quots);
 char *ft_environment_variables(char *arguments, t_env *env_var, t_quots *quots);
 void handle_dollar_sign(t_ParserState *state, t_arg_node **arg_list, t_redir_node **redir_list);
@@ -174,5 +190,6 @@ int	ft_atoi(char *str);
 void ft_print_env2(t_env *envp);
 char **convert_envp_to_arr(t_env *envp);
 void handlle_sigint(int sig);
+void ft_exec_heredocs(t_data **data_add, t_env *envp,  t_quots *quots);
 
 #endif

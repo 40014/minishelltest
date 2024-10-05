@@ -31,7 +31,7 @@ char *ft_strncpy(char *dest, const char *src, size_t n)
     return (dest);
 }
 
-char **split_string(const char *input)
+char **split_string(const char *input, t_ParserState *state)
 {
     const char *ptr;
     const char *start;
@@ -44,6 +44,12 @@ char **split_string(const char *input)
     in_word = 0;
     count = 0;
     ptr = input;
+    if (input == NULL)
+        return (NULL);
+    if (input[0] == ' ')
+        state->check_first_space = 1;
+    else
+        state->check_first_space = 0;
     while (*ptr)
     {
         if (!ft_skip_space(*ptr))
@@ -82,13 +88,27 @@ char **split_string(const char *input)
                 return (NULL);
             }
             ft_strncpy(result[idx], start, len);
-            result[idx][len] = '\0';
+            if (*ptr && ft_skip_space(*ptr))
+            {
+                while (ft_skip_space(*ptr))
+                    ptr++;
+                if (*ptr == '\0')
+                {
+                    state->check_last_space = 1;
+                    result[idx][len] = '\0';
+                }
+                else
+                {
+                    state->check_last_space = 0;
+                    result[idx][len] = '\0';
+                }
+            }
+            else
+                result[idx][len] = '\0';
             idx++;
         }
     }
     result[idx] = NULL;
     return (result);
 }
-
-
 

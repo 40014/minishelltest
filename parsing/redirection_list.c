@@ -27,6 +27,3 @@ void append_redir_node(t_redir_node **redir_list, t_redir_node *new_node)
         current->next = new_node;
     }
 }
-
-
-

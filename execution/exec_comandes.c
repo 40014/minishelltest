@@ -14,8 +14,8 @@ int ft_strcmp(char *s1, char *s2)
 
 int exec_simple_commande(t_quots *quots, t_env **envp, t_data **data, t_hold **hold_vars)
 {
-    // if (check_handle_redirections(*data, quots, *envp) == 1)
-    //     return (exit_code);
+    if (check_handle_redirections(*data, quots, *envp) == 1)
+        return (exit_code);
     if (ft_strcmp((*data)->argumment[0], "echo") == 0)
         exit_code = exec_echo((*data)->argumment);
     else if (ft_strcmp((*data)->argumment[0], "pwd") == 0)
@@ -37,8 +37,11 @@ int exec_simple_commande(t_quots *quots, t_env **envp, t_data **data, t_hold **h
 
 void exec_commandes(t_env **envp, t_data **data, t_hold **hold_vars, t_quots *quots)
 {
+    if ((*data) != NULL)
+        ft_exec_heredocs(data, *envp, quots);
     if ((*data)->next == NULL && (*data) != NULL)
         exec_simple_commande(quots, envp, data, hold_vars);
-    else if ((*data)->next != NULL)
+    if ((*data)->next != NULL)
         exec_with_pipes(envp, data, hold_vars, quots);
+    delete_heredoc_files();
 }
